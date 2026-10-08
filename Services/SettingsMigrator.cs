@@ -9,7 +9,7 @@ namespace VNotch.Services;
 public static class SettingsMigrator
 {
 
-    public const int CurrentVersion = 14;
+    public const int CurrentVersion = 15;
 
     private static readonly IReadOnlyDictionary<int, Func<JsonObject, JsonObject>> _migrations =
         new Dictionary<int, Func<JsonObject, JsonObject>>
@@ -28,6 +28,7 @@ public static class SettingsMigrator
             [11] = MigrateV11,
             [12] = MigrateV12,
             [13] = MigrateV13,
+            [14] = MigrateV14,
         };
 
     private static void EnsureProperty(JsonObject root, string propertyName, JsonNode? defaultValue)
@@ -146,6 +147,13 @@ public static class SettingsMigrator
         root[nameof(NotchSettings.EnableSpotifyCanvas)] = false;
         root[nameof(NotchSettings.AllowOnlineCanvas)] = false;
         root[nameof(NotchSettings.SpotifyCanvasConsentVersion)] = 0;
+        return root;
+    }
+
+    private static JsonObject MigrateV14(JsonObject root)
+    {
+        EnsureProperty(root, nameof(NotchSettings.EnableSliverMode), false);
+        EnsureProperty(root, nameof(NotchSettings.SliverHeight), 10);
         return root;
     }
 

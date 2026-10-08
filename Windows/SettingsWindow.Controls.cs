@@ -304,6 +304,12 @@ public partial class SettingsWindow
         AnimateDependentElement(IdleAutoHideDelaySlider, enabled, 0.4, animate: true);
     }
 
+    private void SliverModeCheck_Changed(object sender, RoutedEventArgs e)
+    {
+        bool enabled = SliverModeCheck.IsChecked ?? false;
+        AnimateDependentElement(SliverHeightSlider, enabled, 0.4, animate: true);
+    }
+
     private void LanguageCombo_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
         if (_isLoadingSettings) return;

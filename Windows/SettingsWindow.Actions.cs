@@ -102,6 +102,10 @@ public partial class SettingsWindow
             IdleAutoHideDelaySlider.Value = Math.Max(2, defaults.IdleAutoHideDelay / 1000.0);
             IdleAutoHideDelaySlider.IsEnabled = defaults.EnableIdleAutoHide;
             IdleAutoHideDelaySlider.Opacity = defaults.EnableIdleAutoHide ? 1.0 : 0.4;
+            SliverModeCheck.IsChecked = defaults.EnableSliverMode;
+            SliverHeightSlider.Value = Math.Clamp(defaults.SliverHeight, SliverMinHeightDip, SliverMaxHeightDip);
+            SliverHeightSlider.IsEnabled = defaults.EnableSliverMode;
+            SliverHeightSlider.Opacity = defaults.EnableSliverMode ? 1.0 : 0.4;
 
             LocalOnlyModeCheck.IsChecked = defaults.EnableLocalOnlyMode;
             AutoCheckUpdatesCheck.IsChecked = defaults.AutoCheckUpdates;
@@ -596,6 +600,8 @@ public partial class SettingsWindow
         snapshot.HideOnWindowedFullscreen = HideOnWindowedFullscreenCheck.IsChecked ?? true;
         snapshot.EnableIdleAutoHide = IdleAutoHideCheck.IsChecked ?? false;
         snapshot.IdleAutoHideDelay = Math.Max(1000, (int)(IdleAutoHideDelaySlider.Value * 1000));
+        snapshot.EnableSliverMode = SliverModeCheck.IsChecked ?? false;
+        snapshot.SliverHeight = Math.Clamp((int)SliverHeightSlider.Value, SliverMinHeightDip, SliverMaxHeightDip);
         snapshot.ShowMusicNotifications = MusicNotifyCheck.IsChecked ?? true;
         snapshot.ShowSystemNotifications = SystemNotifyCheck.IsChecked ?? true;
         snapshot.ShowBatteryIndicator = ShowBatteryCheck.IsChecked ?? true;

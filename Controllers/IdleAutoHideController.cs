@@ -15,9 +15,12 @@ public sealed class IdleAutoHideController : IDisposable
     private readonly Action _applyVisibilityState;
     private readonly Action _stopHoverTimers;
     private readonly Action _onRevealed;
+    private readonly Func<bool> _shouldSliver;
+    private readonly Func<bool, bool> _applySliverState;
 
     private readonly DispatcherTimer _timer;
     private DateTime _idleSinceUtc = DateTime.MinValue;
+    private bool _isSlivered;
     private bool _disposed;
 
     public IdleAutoHideController(
@@ -26,7 +29,9 @@ public sealed class IdleAutoHideController : IDisposable
         Func<bool> isNotchEmptyAndIdle,
         Action applyVisibilityState,
         Action stopHoverTimers,
-        Action onRevealed)
+        Action onRevealed,
+        Func<bool> shouldSliver,
+        Func<bool, bool> applySliverState)
     {
         _shellState = shellState ?? throw new ArgumentNullException(nameof(shellState));
         _getSettings = getSettings ?? throw new ArgumentNullException(nameof(getSettings));
@@ -34,6 +39,8 @@ public sealed class IdleAutoHideController : IDisposable
         _applyVisibilityState = applyVisibilityState ?? throw new ArgumentNullException(nameof(applyVisibilityState));
         _stopHoverTimers = stopHoverTimers ?? throw new ArgumentNullException(nameof(stopHoverTimers));
         _onRevealed = onRevealed ?? throw new ArgumentNullException(nameof(onRevealed));
+        _shouldSliver = shouldSliver ?? throw new ArgumentNullException(nameof(shouldSliver));
+        _applySliverState = applySliverState ?? throw new ArgumentNullException(nameof(applySliverState));
 
         _timer = new DispatcherTimer(DispatcherPriority.Background)
         {
@@ -43,6 +50,8 @@ public sealed class IdleAutoHideController : IDisposable
     }
 
     public DispatcherTimer Timer => _timer;
+
+    public bool IsSlivered => _isSlivered;
 
     private bool IsHiddenByIdle
     {
@@ -54,7 +63,7 @@ public sealed class IdleAutoHideController : IDisposable
     {
         var settings = _getSettings();
 
-        if (settings.EnableIdleAutoHide)
+        if (settings.EnableIdleAutoHide || settings.EnableSliverMode)
         {
             _idleSinceUtc = DateTime.MinValue;
             if (!_timer.IsEnabled)
@@ -73,13 +82,16 @@ public sealed class IdleAutoHideController : IDisposable
                     _onRevealed();
             }
         }
+
+        if (!settings.EnableSliverMode)
+            LeaveSliver();
     }
 
     private void IdleHideTimer_Tick(object? sender, EventArgs e)
     {
         var settings = _getSettings();
 
-        if (!settings.EnableIdleAutoHide)
+        if (!settings.EnableIdleAutoHide && !settings.EnableSliverMode)
         {
             _timer.Stop();
             return;
@@ -90,7 +102,7 @@ public sealed class IdleAutoHideController : IDisposable
         if (!idle)
         {
             _idleSinceUtc = DateTime.MinValue;
-            if (IsHiddenByIdle)
+            if (IsHiddenByIdle || _isSlivered)
                 Wake();
             return;
         }
@@ -105,13 +117,18 @@ public sealed class IdleAutoHideController : IDisposable
 
         if ((DateTime.UtcNow - _idleSinceUtc).TotalMilliseconds >= settings.IdleAutoHideDelay)
         {
-            HideForIdle();
+            if (_shouldSliver())
+                EnterSliver();
+            else if (settings.EnableIdleAutoHide && !_isSlivered)
+                HideForIdle();
         }
     }
 
     private void HideForIdle()
     {
         if (IsHiddenByIdle) return;
+
+        LeaveSliver();
 
         IsHiddenByIdle = true;
         RuntimeLog.Log("IDLE-HIDE", $"Notch hidden after {_getSettings().IdleAutoHideDelay}ms idle");
@@ -121,11 +138,37 @@ public sealed class IdleAutoHideController : IDisposable
         _applyVisibilityState();
     }
 
+    private void EnterSliver()
+    {
+        if (_isSlivered) return;
+
+        // 展开动画等场景会拒绝收缩，此时保持原状，下一轮空闲再试。
+        if (!_applySliverState(true)) return;
+
+        _isSlivered = true;
+        RuntimeLog.Log("IDLE-SLIVER", $"Notch shrank to the thin bar after {_getSettings().IdleAutoHideDelay}ms idle");
+
+        _stopHoverTimers();
+    }
+
+    private void LeaveSliver()
+    {
+        if (!_isSlivered) return;
+
+        _isSlivered = false;
+        RuntimeLog.Log("IDLE-SLIVER", "Notch restored from the thin bar");
+        _applySliverState(false);
+    }
+
     public void Wake()
     {
-        if (!_getSettings().EnableIdleAutoHide) return;
+        var settings = _getSettings();
+
+        if (!settings.EnableIdleAutoHide && !settings.EnableSliverMode) return;
 
         _idleSinceUtc = DateTime.MinValue;
+
+        LeaveSliver();
 
         if (!IsHiddenByIdle) return;
 

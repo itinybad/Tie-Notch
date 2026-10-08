@@ -23,6 +23,10 @@ namespace VNotch;
 
 public partial class SettingsWindow : Window
 {
+    // 细条高度允许范围，与设置界面的滑块保持一致。
+    private const int SliverMinHeightDip = 4;
+    private const int SliverMaxHeightDip = 20;
+
     private static readonly SolidColorBrush ConfirmationGreenBrush = CreateSettingsBrush(Color.FromRgb(0x50, 0xC8, 0x78));
     private static readonly SolidColorBrush CardBackgroundBrush = CreateSettingsBrush(Color.FromArgb(12, 255, 255, 255));
     private static readonly SolidColorBrush CardBorderBrush = CreateSettingsBrush(Color.FromArgb(18, 255, 255, 255));
@@ -282,6 +286,10 @@ public partial class SettingsWindow : Window
         IdleAutoHideDelaySlider.Value = Math.Max(2, _settings.IdleAutoHideDelay / 1000.0);
         IdleAutoHideDelaySlider.IsEnabled = _settings.EnableIdleAutoHide;
         IdleAutoHideDelaySlider.Opacity = _settings.EnableIdleAutoHide ? 1.0 : 0.4;
+        SliverModeCheck.IsChecked = _settings.EnableSliverMode;
+        SliverHeightSlider.Value = Math.Clamp(_settings.SliverHeight, SliverMinHeightDip, SliverMaxHeightDip);
+        SliverHeightSlider.IsEnabled = _settings.EnableSliverMode;
+        SliverHeightSlider.Opacity = _settings.EnableSliverMode ? 1.0 : 0.4;
         MusicNotifyCheck.IsChecked = _settings.ShowMusicNotifications;
         SystemNotifyCheck.IsChecked = _settings.ShowSystemNotifications;
         EnableSpotlightCheck.IsChecked = _settings.EnableSpotlight;
@@ -405,6 +413,7 @@ public partial class SettingsWindow : Window
         TooltipHelper.SetLocalizedTooltip(DisableMouseLeaveAutoCloseCheck, "tooltip.disableAutoClose");
         TooltipHelper.SetLocalizedTooltip(ReopenLastViewCheck, "tooltip.reopenLastView");
         TooltipHelper.SetLocalizedTooltip(IdleAutoHideCheck, "tooltip.idleAutoHide");
+        TooltipHelper.SetLocalizedTooltip(SliverModeCheck, "tooltip.sliverMode");
         TooltipHelper.SetLocalizedTooltip(EnableSpotifyLyricsCheck, "tooltip.spotifyLyrics");
         TooltipHelper.SetLocalizedTooltip(EnableYouTubeSubtitlesCheck, "tooltip.youtubeSubtitles");
         TooltipHelper.SetLocalizedTooltip(IgnoreYouTubeAutoSubtitlesCheck, "settings.ignoreYouTubeAutoSubtitles.hint");
@@ -585,6 +594,12 @@ public partial class SettingsWindow : Window
         IdleAutoHideDelaySlider.Label = Loc.Get("settings.idleAutoHideDelay");
         IdleAutoHideDelaySlider.Description = Loc.Get("settings.idleAutoHideDelay.hint");
         IdleAutoHideDelayKeywords.Text = Loc.Get("settings.idleAutoHideDelay.keywords");
+        SliverModeCheck.Content = Loc.Get("settings.sliverMode");
+        SliverModeHint.Text = Loc.Get("settings.sliverMode.hint");
+        SliverModeKeywords.Text = Loc.Get("settings.sliverMode.keywords");
+        SliverHeightSlider.Label = Loc.Get("settings.sliverHeight");
+        SliverHeightSlider.Description = Loc.Get("settings.sliverHeight.hint");
+        SliverHeightKeywords.Text = Loc.Get("settings.sliverHeight.keywords");
 
         CheckUpdateButton.Content = Loc.Get("settings.checkUpdate");
         DownloadUpdateButton.Content = Loc.Get("settings.downloadInstall");

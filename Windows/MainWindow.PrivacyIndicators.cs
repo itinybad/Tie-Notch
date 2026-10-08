@@ -85,6 +85,8 @@ public partial class MainWindow
 
         if (shouldShow && !wasShowing)
         {
+            // 正在使用麦克风/摄像头时细条必须先长回胶囊，否则指示点会被一起淡出。
+            WakeFromIdle();
             ShowPrivacyDot(state);
         }
         else if (!shouldShow && wasShowing)

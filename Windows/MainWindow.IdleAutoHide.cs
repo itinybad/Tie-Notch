@@ -28,7 +28,9 @@ public partial class MainWindow
             {
                 TriggerZOrderBurst(TimeSpan.FromMilliseconds(900));
                 EnsureTopmost(force: true);
-            });
+            },
+            shouldSliver: () => _settings.EnableSliverMode && !_privacyIndicatorsVisible,
+            applySliverState: ApplySliverState);
     }
 
     private void ApplyIdleAutoHideSettings() => _idleAutoHide?.ApplySettings();

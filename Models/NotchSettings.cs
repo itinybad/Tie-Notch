@@ -86,6 +86,10 @@ public class NotchSettings
     public bool EnableIdleAutoHide { get; set; } = false;
     public int IdleAutoHideDelay { get; set; } = 5000;
 
+    // 空闲时收缩为细条：静止态显示一条细条，鼠标靠上时恢复胶囊。
+    public bool EnableSliverMode { get; set; } = false;
+    public int SliverHeight { get; set; } = 10;
+
     public bool ShowMusicNotifications { get; set; } = true;
     public bool ShowSystemNotifications { get; set; } = true;
 

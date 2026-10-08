@@ -1408,6 +1408,29 @@
                                         </Border>
                                         <Border Style="{StaticResource SettingRowBorder}">
                                             <StackPanel>
+                                                <CheckBox x:Name="SliverModeCheck" x:Uid="sliverMode" Content="Shrink to a thin bar when idle"
+                                                         Checked="SliverModeCheck_Changed" Unchecked="SliverModeCheck_Changed"/>
+                                                <TextBlock x:Name="SliverModeHint" Text="Collapse the notch into a thin bar when it stays empty. Point at the bar to bring the capsule back."
+                                                           Style="{StaticResource SettingHintText}"
+                                                           Margin="0,4,0,0"/>
+                                                <TextBlock x:Name="SliverModeKeywords" Visibility="Collapsed"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Style="{StaticResource SettingRowBorder}" Margin="0,0,0,4">
+                                            <StackPanel>
+                                                <controls:ElasticSlider x:Name="SliverHeightSlider"
+                                                        Label="Thin bar height" Unit=" px"
+                                                        Description="Height of the notch while it rests as a thin bar."
+                                                        Minimum="4"
+                                                        Maximum="20"
+                                                        Value="10"
+                                                        TickFrequency="1"
+                                                        IsSnapToTickEnabled="True"/>
+                                                <TextBlock x:Name="SliverHeightKeywords" Visibility="Collapsed"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Style="{StaticResource SettingRowBorder}">
+                                            <StackPanel>
                                                 <CheckBox x:Name="MusicNotifyCheck" x:Uid="musicNotify" Content="Show music notifications"/>
                                                 <TextBlock x:Name="MusicNotifyHint" Text="Keep the media widget responsive to playback changes."
                                                            Style="{StaticResource SettingHintText}"

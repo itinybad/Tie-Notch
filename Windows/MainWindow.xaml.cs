@@ -1629,9 +1629,17 @@ public partial class MainWindow : Window
 
         if (oldSettings == null
             || oldSettings.EnableIdleAutoHide != _settings.EnableIdleAutoHide
-            || oldSettings.IdleAutoHideDelay != _settings.IdleAutoHideDelay)
+            || oldSettings.IdleAutoHideDelay != _settings.IdleAutoHideDelay
+            || oldSettings.EnableSliverMode != _settings.EnableSliverMode)
         {
             ApplyIdleAutoHideSettings();
+        }
+
+        if (oldSettings == null
+            || oldSettings.EnableSliverMode != _settings.EnableSliverMode
+            || oldSettings.SliverHeight != _settings.SliverHeight)
+        {
+            RefreshSliverPresentation();
         }
 
         if (oldSettings == null || oldSettings.EnableDebugMode != _settings.EnableDebugMode)
@@ -1771,6 +1779,8 @@ public partial class MainWindow : Window
 
                 UpdateNotchClip();
                 UpdateMediaBackgroundFootprint();
+
+                RefreshSliverPresentation();
 
                 if (animatePulse)
                 {
@@ -2043,7 +2053,7 @@ public partial class MainWindow : Window
 
     private void UpdateEarVisibility()
     {
-        bool showEars = !_settings.EnableDynamicIslandMode && !IsLiquidGlassEnabled;
+        bool showEars = !_settings.EnableDynamicIslandMode && !IsLiquidGlassEnabled && !_isSliver;
         var earVisibility = showEars ? Visibility.Visible : Visibility.Collapsed;
         double earOpacity = showEars ? 1.0 : 0.0;
 
@@ -2227,6 +2237,9 @@ public partial class MainWindow : Window
     }
     private void NotchWrapper_MouseEnter(object sender, MouseEventArgs e)
     {
+        // 细条态下鼠标贴上来就唤醒，让凹槽长回胶囊。
+        WakeFromIdle();
+
         _hoverCollapseTimer.Stop();
         _hoverCollapseTimer.Interval = TimeSpan.FromMilliseconds(_settings.HoverCollapseDelay);
         AnimateNotchHover(true);
