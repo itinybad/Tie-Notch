@@ -124,7 +124,7 @@ public sealed class ApiKeySecurityTests
     {
         foreach (string key in new[] { "secret\r\nx-header: injected", "secret token", "secret\0token", new string('s', 4097) })
         {
-            var settings = new NotchSettings { SpotlightAiProvider = provider };
+            var settings = new NotchSettings { SpotlightAiProvider = provider, AllowOnlineAi = true };
             SpotlightAiService.Configure(settings, provider, key, "model");
             var error = Assert.Throws<SpotlightAiException>(() => SpotlightAiService.CreateRequest(settings, []));
             Assert.Equal("spotlight.ai.authError", error.Message);

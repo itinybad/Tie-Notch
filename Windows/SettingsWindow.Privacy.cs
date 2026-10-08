@@ -42,6 +42,7 @@ public partial class SettingsWindow
         if (_privacyOptions.TryGetValue("canvas", out var option) && ReferenceEquals(sender, option.Check))
             SetSpotifyCanvasOptIn(option.Check.IsChecked == true, ConfirmSpotifyCanvasOptIn);
         else PushLivePreview();
+        UpdateSpotlightAiVisibility(_privacyOptions["ai"].Check.IsChecked == true);
     }
 
     private void ReadAdditionalPrivacy(NotchSettings settings)
@@ -62,5 +63,14 @@ public partial class SettingsWindow
             controls.Check.Content = Loc.Get(key);
             controls.Hint.Text = Loc.Get(key + ".hint");
         }
+    }
+
+    // Tie-Notch: 未允许联网 AI 时隐藏设置里的 AI 配置区块。
+    private void UpdateSpotlightAiVisibility(bool allowed)
+    {
+        Visibility visibility = allowed ? Visibility.Visible : Visibility.Collapsed;
+        SpotlightDefaultModeRow.Visibility = visibility;
+        SpotlightAiSection.Visibility = visibility;
+        SpotlightAiSpeedRow.Visibility = visibility;
     }
 }

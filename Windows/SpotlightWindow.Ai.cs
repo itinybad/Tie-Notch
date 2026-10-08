@@ -21,10 +21,14 @@ public partial class SpotlightWindow
 
     internal static bool IsAiToggle(Key key, ModifierKeys modifiers) => key == Key.Tab && modifiers == ModifierKeys.None;
 
+    // Tie-Notch: 未允许联网 AI 时不提供 AI 入口。
+    private bool AiAllowed => !_settings.EnableLocalOnlyMode && _settings.AllowOnlineAi;
+
     private bool HandleAiKey(KeyEventArgs e)
     {
         if (IsAiToggle(e.Key, Keyboard.Modifiers))
         {
+            if (!AiAllowed) return false;
             if (!e.IsRepeat) ToggleAiMode();
             e.Handled = true;
             return true;
@@ -421,6 +425,7 @@ public partial class SpotlightWindow
 
     private void AiToggle_Click(object sender, MouseButtonEventArgs e)
     {
+        if (!AiAllowed) { e.Handled = true; return; }
         ToggleAiMode();
         e.Handled = true;
     }

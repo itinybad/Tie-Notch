@@ -1381,7 +1381,7 @@ public partial class SpotlightWindow : Window
         SetContentShown(showContent);
         // A result-count change while the panel is open resizes it smoothly.
         if (showContent && contentWasShown) ScheduleContentResize();
-        SetEscBadgeVisible(!showContent);
+        SetEscBadgeVisible(!showContent && (_aiMode || AiAllowed));
     }
 
     private void ScheduleStatusRefresh()

@@ -1957,7 +1957,7 @@
                                                            AutomationProperties.LiveSetting="Polite"/>
                                             </StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource SettingRowBorder}">
+                                        <Border x:Name="SpotlightDefaultModeRow" Style="{StaticResource SettingRowBorder}">
                                             <StackPanel>
                                                 <TextBlock x:Name="SpotlightDefaultModeLabel" Style="{StaticResource SettingTitleText}"/>
                                                 <ComboBox x:Name="SpotlightDefaultModeCombo" MinHeight="40" Margin="0,8,0,0" SelectionChanged="SpotlightDefaultMode_Changed">
@@ -1966,7 +1966,7 @@
                                                 </ComboBox>
                                             </StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource SettingRowBorder}">
+                                        <Border x:Name="SpotlightAiSection" Style="{StaticResource SettingRowBorder}">
                                             <StackPanel>
                                                 <TextBlock x:Name="SpotlightAiTitle" Style="{StaticResource SettingTitleText}"/>
                                                 <TextBlock x:Name="SpotlightAiHint" Style="{StaticResource SettingHintText}" TextWrapping="Wrap" Margin="0,6,0,18"/>
@@ -1983,7 +1983,7 @@
                                                 </Border>
                                             </StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource SettingRowBorder}">
+                                        <Border x:Name="SpotlightAiSpeedRow" Style="{StaticResource SettingRowBorder}">
                                             <controls:ElasticSlider x:Name="SpotlightAiSpeedSlider" Minimum="2" Maximum="30" Value="9" TickFrequency="1" IsSnapToTickEnabled="True" Margin="0,4,0,4" ValueChanged="SpotlightAiSpeed_Changed"/>
                                         </Border>
                                     </StackPanel>

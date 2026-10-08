@@ -310,7 +310,7 @@ public sealed class SpotlightAiPresentationTests
 
     private static NotchSettings Settings()
     {
-        var settings = new NotchSettings { SpotlightAiProvider = "OpenAI" };
+        var settings = new NotchSettings { SpotlightAiProvider = "OpenAI", AllowOnlineAi = true };
         SpotlightAiService.Configure(settings, "OpenAI", "test-secret", "test-model");
         return settings;
     }

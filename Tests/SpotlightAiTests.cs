@@ -17,6 +17,7 @@ public sealed class SpotlightAiTests
         var settings = JsonSerializer.Deserialize<NotchSettings>(
             """{"SpotlightAiProvider":"GitHub Copilot","SpotlightCopilotModel":"old-model","AllowCopilot":true}""")!;
         settings.SpotlightOpenAIApiKey = "private-key";
+        settings.AllowOnlineAi = true;
         Assert.DoesNotContain(settings.SpotlightAiProvider, SpotlightAiService.Providers);
         Assert.False(SpotlightAiService.IsConfigured(settings));
         Assert.Equal(("", ""), SpotlightAiService.Configuration(settings, settings.SpotlightAiProvider));
@@ -165,7 +166,7 @@ public sealed class SpotlightAiTests
 
     private static NotchSettings Settings(string provider)
     {
-        var s = new NotchSettings { SpotlightAiProvider = provider };
+        var s = new NotchSettings { SpotlightAiProvider = provider, AllowOnlineAi = true };
         SpotlightAiService.Configure(s, provider, "test-secret", "model-id");
         return s;
     }

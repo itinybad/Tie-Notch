@@ -15,6 +15,7 @@ public partial class SettingsWindow
     {
         _loadingAi = true;
         _aiDraft = settings.Clone();
+        UpdateSpotlightAiVisibility(settings.AllowOnlineAi);
         SpotlightDefaultModeCombo.SelectedIndex = settings.SpotlightDefaultAi ? 1 : 0;
         SpotlightAiSpeedSlider.Value = Math.Clamp(settings.SpotlightAiWordsPerSecond, 2, 30);
         SpotlightAiProviderCombo.ItemsSource = SpotlightAiService.Providers;

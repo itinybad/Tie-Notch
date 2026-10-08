@@ -13,7 +13,8 @@ public sealed class NetworkPrivacyTests
     public void PrivacyPreferencesRoundTripAndOldSettingsKeepCompatibleDefaults()
     {
         var old = System.Text.Json.JsonSerializer.Deserialize<NotchSettings>("{}")!;
-        Assert.True(old.AllowOnlineAi);
+        // Tie-Notch: 联网 AI 默认为关闭状态。
+        Assert.False(old.AllowOnlineAi);
         Assert.True(old.SaveAiChatHistory);
         var settings = new NotchSettings
         {
@@ -50,7 +51,7 @@ public sealed class NetworkPrivacyTests
     public async Task RevokingAccessCancelsAnInFlightRequestAndReenableUsesNewPermission()
     {
         var policy = new NetworkPrivacy();
-        policy.Apply(new NotchSettings());
+        policy.Apply(new NotchSettings { AllowOnlineAi = true });
         var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         using var client = new HttpClient(new NetworkPrivacy.PrivacyHandler(policy, NetworkFeature.Ai,
             new Handler(async (_, token) =>
@@ -65,7 +66,7 @@ public sealed class NetworkPrivacyTests
         policy.Apply(new NotchSettings { EnableLocalOnlyMode = true });
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => request);
         Assert.True(oldPermission.IsCancellationRequested);
-        policy.Apply(new NotchSettings());
+        policy.Apply(new NotchSettings { AllowOnlineAi = true });
         Assert.False(policy.Acquire(NetworkFeature.Ai).IsCancellationRequested);
         Assert.True(oldPermission.IsCancellationRequested);
     }
@@ -74,7 +75,7 @@ public sealed class NetworkPrivacyTests
     public async Task RevokingAccessAlsoStopsResponseBodyReadsAfterHeaders()
     {
         var policy = new NetworkPrivacy();
-        policy.Apply(new NotchSettings());
+        policy.Apply(new NotchSettings { AllowOnlineAi = true });
         using var client = new HttpClient(new NetworkPrivacy.PrivacyHandler(policy, NetworkFeature.Ai,
             new Handler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("private response") }))));
         using var response = await client.GetAsync("https://example.invalid", HttpCompletionOption.ResponseHeadersRead);
@@ -86,7 +87,7 @@ public sealed class NetworkPrivacyTests
     [Fact]
     public void IndividualControlsDoNotErasePreferencesOrDisableUnrelatedFeatures()
     {
-        var settings = new NotchSettings { AllowOnlineCanvas = false, SaveAiChatHistory = false };
+        var settings = new NotchSettings { AllowOnlineAi = true, AllowOnlineCanvas = false, SaveAiChatHistory = false };
         Assert.True(NetworkPrivacy.Allows(settings, NetworkFeature.Ai));
         Assert.False(NetworkPrivacy.Allows(settings, NetworkFeature.Canvas));
         settings.EnableLocalOnlyMode = true;

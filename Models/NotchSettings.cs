@@ -157,7 +157,8 @@ public class NotchSettings
     public bool HasSeenSpotlightIntro { get; set; } = false;
 
     public bool EnableLocalOnlyMode { get; set; } = false;
-    public bool AllowOnlineAi { get; set; } = true;
+    // Tie-Notch: 联网 AI 默认关闭，需要在 设置-隐私 中显式允许。
+    public bool AllowOnlineAi { get; set; } = false;
     public bool AllowOnlineSubtitles { get; set; } = true;
     public bool AllowOnlineCanvas { get; set; } = false;
     public bool AllowOnlineWeather { get; set; } = true;

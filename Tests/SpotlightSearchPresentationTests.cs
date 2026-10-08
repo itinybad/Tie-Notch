@@ -64,7 +64,11 @@ public sealed class SpotlightSearchPresentationTests
         AnimationConfig.SetReduceMotion(reducedMotion);
         try
         {
-            using var fixture = new SpotlightWindowFixture(Settings(), searchProvider: new ResultsProvider());
+            // Tie-Notch: AI 入口默认关闭，这里显式允许才能验证 Tab 切换行为。
+            var aiSettings = Settings();
+            aiSettings.EnableLocalOnlyMode = false;
+            aiSettings.AllowOnlineAi = true;
+            using var fixture = new SpotlightWindowFixture(aiSettings, searchProvider: new ResultsProvider());
             var window = fixture.Window;
             window.ShowSpotlight();
             await WpfFrameWaiter.UntilAsync(() => !Field<bool>(window, "_entranceActive"), "search entrance", ct);
